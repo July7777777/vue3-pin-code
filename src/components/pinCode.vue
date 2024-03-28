@@ -1,37 +1,43 @@
 <!-- PinCode.vue -->
 <template>
-  <div class="pin-code">
-    <input v-for="(_, index) in maxInputs" :class="[shape, 'pin-code-input']" :key="index" type="tel" maxlength="1"
-      autocomplete="off" @input="handleInput(index, $event)" @keydown.backspace="onBackspace(index)"
-      @keydown.space.prevent @focus="selectText($event)" pattern="[0-9]*" inputmode="numeric" />
+  <div class="pin-code" :class="[shape]">
+    <input v-for="(_, index) in maxInputs"
+      :class="['pin-code-input', isMask ? '' : 'font', pinCode[index].length === 0 ? 'emptyBGC' : '']" :key="index"
+      type="text" maxlength="1" autocomplete="off" @input="handleInput(index, $event)"
+      @keydown.backspace="onBackspace(index)" @keydown.space.prevent @keydown.backspace.prevent
+      @focus="selectText($event)" />
   </div>
 </template>
 <script setup lang="ts">
-  import { ref, watchEffect, defineProps, nextTick } from 'vue';
-  import Props from './props';
+  import { ref, watchEffect, nextTick,  defineExpose } from "vue";
+  import Props from "./props";
   const props = defineProps(Props);
   // 样式处理 start
   // const { margin, width, height, shape } = props;
   // const baseStyle = { margin: `${margin}px`, width: `${width}px`, height: `${height}px`, backgroundColor: '#000', border: '1px solid #81c784' }
   // 样式处理 end
-  const { autoComplete, maxInputs, onComplete, shape } = props;//数据、函数等
-  // const InputElementArr = ref<HTMLInputElement[]>([]);
+  const { autoComplete, maxInputs, completeFn, shape, isMask, maskFlag, } = props; //数据、函数等
   const InputElementArr = ref<readonly HTMLInputElement[]>([]);
-  const pinCode = ref<string[]>(Array(props.maxInputs).fill(''));
-
+  const pinCode = ref<string[]>(Array(props.maxInputs).fill(""));
   watchEffect(async () => {
-    await nextTick()
-    InputElementArr.value = Array.from(document.getElementsByClassName('pin-code-input')) as HTMLInputElement[];
-    console.log('重新渲染了')
+    await nextTick();
+    InputElementArr.value = Array.from(
+      document.getElementsByClassName("pin-code-input")
+    ) as HTMLInputElement[];
+    console.log("重新渲染了");
   });
 
+  // const onComplete = () => completeFn(pinCode.value);
   const handleInput = (index: number, v: any) => {
-    const value = v?.target?.value.replace(/ /g, '') || v?.data.replace(/ /g, '')
+    if (!v?.target?.value) return;
+    const value = v?.target?.value || v?.data;
     if (value?.length === 1) {
       pinCode.value[index] = value;
-      if (pinCode.value.every((d) => Boolean(d))) { // 确保每个元素都不为空字符串
+      InputElementArr.value[index].value = isMask ? maskFlag : value;
+      if (pinCode.value.every(d => Boolean(d))) {
+        // 确保每个元素都不为空字符串
         InputElementArr.value[index]?.blur();
-        autoComplete && onComplete(pinCode.value.join(''))
+        autoComplete && completeFn(pinCode.value);
       } else {
         focusNextInput(index + 1);
       }
@@ -45,16 +51,15 @@
   // 退格键
   const onBackspace = async (currentIndex: number) => {
     if (currentIndex >= 0 && currentIndex < pinCode.value.length) {
-      pinCode.value[currentIndex] = '';
+      pinCode.value[currentIndex] = "";
+      InputElementArr.value[currentIndex].value = "";
 
       // 如果不是第一个输入框，则聚焦到前一个输入框
       if (currentIndex > 0) {
         InputElementArr.value[currentIndex - 1]?.focus();
-      } else if (currentIndex === 0) {
-        // 如果已经在第一个输入框按Backspace键，可以选择是否重置整个pinCode数组
-        // 在这里，我们不需要重置整个数组，只需聚焦到最后一个输入框即可
-        InputElementArr.value[pinCode.value.length - 1]?.focus();
       }
+      //  else if (currentIndex === 0) {
+      // }
       // pinCode.value[currentIndex - 1] = '';
     }
   };
@@ -65,19 +70,86 @@
       target.setSelectionRange(0, target.value.length);
     }
   };
+  defineExpose({
+    onComplete: completeFn(pinCode.value)
+  })
 </script>
 
 <style scoped>
   input {
+    border: none;
+    outline: none;
     margin: 10px;
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     text-align: center;
-    border: 1px solid #ccc;
+    /* padding: 10px 7px; */
+  }
+
+  .font {
+    font-size: larger;
+    font-weight: bold;
+  }
+
+  .Box {
+    input {
+      height: 55px;
+      border: 2px solid #67c23a;
+    }
+
+    input:focus {
+      border: 2px solid #40a0ff90;
+      /* background-color: #409EFF; */
+    }
+
+    .emptyBGC {
+      border-color: #f56c6c;
+      /* background-color: #F56C6C; */
+    }
+  }
+
+  .Circle {
+    input {
+      border-radius: 50%;
+      border: 2px solid #67c23a;
+    }
+
+    input:focus {
+      /* border: 2px solid #409EFF; */
+      /* background-color: #409EFF; */
+      border-color: #409eff;
+    }
+
+    .emptyBGC {
+      border-color: #f56c6c;
+      /* background-color: #F56C6C; */
+    }
+  }
+
+  .Line {
+    input {
+      border-bottom: 2px solid #67c23a;
+    }
+
+    input:focus {
+      border-bottom: 2px solid #409eff;
+      /* border: 2px solid #409EFF; */
+      /* background-color: #409EFF; */
+    }
+
+    .emptyBGC {
+      border-color: #f56c6c;
+      /* background-color: #F56C6C; */
+    }
+  }
+
+  .emptyBGC {
+    border-color: #f56c6c;
+    /* background-color: #F56C6C; */
   }
 
   .pin-code {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
   }
 </style>
