@@ -1,33 +1,42 @@
 <!-- PinCode.vue -->
 <template>
-  <div class="pin-code" :class="[shape]">
+  <div class="pin-code" :id="id" :class="[shape]">
     <input v-for="(_, index) in maxInputs"
-      :class="['pin-code-input', isMask ? '' : 'font', pinCode[index].length === 0 ? 'emptyBGC' : '']" :key="index"
+      :class="['pin-code-input', isMask ? '' : 'font', pinCode[index].length === 0 ? 'emptyBGC' : '',]" :key="index"
       type="text" maxlength="1" autocomplete="off" @input="handleInput(index, $event)"
       @keydown.backspace="onBackspace(index)" @keydown.space.prevent @keydown.backspace.prevent
       @focus="selectText($event)" />
   </div>
 </template>
 <script setup lang="ts">
-  import { ref, watchEffect, nextTick,  defineExpose } from "vue";
+  import { ref, onMounted } from "vue";
   import Props from "./props";
   const props = defineProps(Props);
-  // 样式处理 start
-  // const { margin, width, height, shape } = props;
-  // const baseStyle = { margin: `${margin}px`, width: `${width}px`, height: `${height}px`, backgroundColor: '#000', border: '1px solid #81c784' }
-  // 样式处理 end
-  const { autoComplete, maxInputs, completeFn, shape, isMask, maskFlag, } = props; //数据、函数等
+  const { maxInputs, completeFn, shape, isMask, maskFlag, id, isPaste } = props;
   const InputElementArr = ref<readonly HTMLInputElement[]>([]);
   const pinCode = ref<string[]>(Array(props.maxInputs).fill(""));
-  watchEffect(async () => {
-    await nextTick();
+  onMounted(() => {
+    const idElement = document.getElementById(id) as HTMLInputElement;
     InputElementArr.value = Array.from(
-      document.getElementsByClassName("pin-code-input")
+      idElement.getElementsByClassName("pin-code-input")
     ) as HTMLInputElement[];
-    console.log("重新渲染了");
-  });
 
-  // const onComplete = () => completeFn(pinCode.value);
+    // 监听粘贴事件
+    isPaste && window.addEventListener('paste', pasteHandler)
+  })
+  const pasteHandler = (event: any) => {
+    const value = event?.clipboardData?.getData('text/plain')
+
+    const data = Array.from(value.replace(/\s/g, ''))
+    if (data.length === 0) return;
+    data.length = maxInputs
+    for (let i = 0; i < maxInputs; i++) {
+      if (data[i] === undefined) break;
+      pinCode.value[i] = data[i] as string;
+      InputElementArr.value[i].value = isMask ? maskFlag : data[i] as string;
+    }
+    pinCode.value.every(d => Boolean(d)) && completeFn(Array.from(pinCode.value));
+  }
   const handleInput = (index: number, v: any) => {
     if (!v?.target?.value) return;
     const value = v?.target?.value || v?.data;
@@ -37,7 +46,8 @@
       if (pinCode.value.every(d => Boolean(d))) {
         // 确保每个元素都不为空字符串
         InputElementArr.value[index]?.blur();
-        autoComplete && completeFn(pinCode.value);
+        // autoComplete &&
+        completeFn(Array.from(pinCode.value));
       } else {
         focusNextInput(index + 1);
       }
@@ -58,9 +68,6 @@
       if (currentIndex > 0) {
         InputElementArr.value[currentIndex - 1]?.focus();
       }
-      //  else if (currentIndex === 0) {
-      // }
-      // pinCode.value[currentIndex - 1] = '';
     }
   };
   // 选择并聚焦文本输入框中的文本。
@@ -70,41 +77,46 @@
       target.setSelectionRange(0, target.value.length);
     }
   };
-  defineExpose({
-    onComplete: completeFn(pinCode.value)
-  })
+  // defineExpose({
+  //   onComplete: completeFn(pinCode.value)
+  // })
 </script>
 
 <style scoped>
   input {
+    color: #4b4d51;
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
     border: none;
     outline: none;
     margin: 10px;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     text-align: center;
     /* padding: 10px 7px; */
   }
 
   .font {
-    font-size: larger;
+    font-size: 16px;
     font-weight: bold;
   }
 
   .Box {
     input {
-      height: 55px;
-      border: 2px solid #67c23a;
+      height: 40px;
+      border-radius: 3px;
+      background-color: #f5f7fa78;
+      box-shadow: 2px 3px 12px 0 rgba(116, 116, 116, 0.3);
     }
 
     input:focus {
-      border: 2px solid #40a0ff90;
-      /* background-color: #409EFF; */
+      box-shadow: 0px 0px 17px 0px #3d70ff80;
+      background-color: #d4d8e466;
     }
 
     .emptyBGC {
-      border-color: #f56c6c;
-      /* background-color: #F56C6C; */
+      background-color: #f4f5f7;
+      border-color: #e4e7ed;
+      box-shadow: inset 2px 2px 12px 0 rgba(170, 170, 170, 0.2);
     }
   }
 
@@ -132,7 +144,7 @@
     }
 
     input:focus {
-      border-bottom: 2px solid #409eff;
+      border-bottom: 3px solid #409eff;
       /* border: 2px solid #409EFF; */
       /* background-color: #409EFF; */
     }

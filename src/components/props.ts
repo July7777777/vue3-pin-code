@@ -1,6 +1,19 @@
 import { PropType } from "vue";
 
 export default {
+  id: {
+    type: String,
+    default: 'pin-code',
+    validator: (value: string): boolean => {
+      // 简化validator函数写法，确保pin码id不全为空格
+      // return !/^\s*$/.test(value);
+      if (value.trim() === '') {
+        throw new Error('组件pinCode 参数 ID不能为空格');
+      }
+      return true;
+    },
+    required: false,
+  },
   maxInputs: {
     //有几个输入框，非必填，number类型，默认值为4
     required: false,
@@ -11,7 +24,7 @@ export default {
     },
   },
   autoComplete: {
-    //输入完毕后是否自动调用回调函数，非必填，Boolean类型，默认值为true
+    //输入完毕后是否自动调用回调函数，非必填，Boolean类型，默认值为true  暂未开放
     required: false,
     type: Boolean as PropType<boolean>,
     default: true,
@@ -21,6 +34,12 @@ export default {
     required: true,
     type: Function as PropType<(pinArr: Array<string>) => void>,
     default: () => ([]) => { },
+  },
+  isPaste: {
+    //是否允许粘贴，非必填，Boolean类型，默认值为false，注意：多个组件在同一个页面使用,此参数开启的组件均会触发粘贴填充
+    required: false,
+    type: Boolean as PropType<boolean>,
+    default: false,
   },
   isMask: {
     //是否遮盖pin码，非必填，Boolean类型，默认值为true
