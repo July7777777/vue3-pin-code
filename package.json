@@ -1,11 +1,37 @@
 {
-  "name": "pin-code",
-  "private": true,
-  "version": "0.0.0",
+  "name": "vue3-pin-code",
+  "private": false,
+  "version": "0.0.16",
   "type": "module",
+  "main": "dist/vue3-pin-code.umd.cjs",
+  "types": "dist/pinCode.vue.d.ts",
+  "module": "dist/vue3-pin-code.umd.cjs",
+  "files": [
+    "package.json",
+    "README.md",
+    "dist"
+  ],
+  "author": "July7777777",
+  "license": "MIT",
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/July7777777/vue3-pin-code"
+  },
+  "bugs": {
+    "url": "https://github.com/July7777777/vue3-pin-code/issues"
+  },
+  "homepage": "https://github.com/July7777777/vue3-pin-code/blob/main/README.md",
+  "description": "vue3-pin-code:一个用 vite + vue3 构成，可自由配置的pin输入 ",
+  "keywords": [
+    "vue3-pin-code",
+    "pin-code",
+    "vite",
+    "vue3",
+    "typescript"
+  ],
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
+    "build": "vue-tsc && vite build ",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -15,6 +41,7 @@
     "@vitejs/plugin-vue": "^5.0.4",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
+    "vite-plugin-dts": "^3.8.1",
     "vue-tsc": "^2.0.6"
   }
 }

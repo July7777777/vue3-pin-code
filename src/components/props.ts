@@ -1,6 +1,6 @@
 import { PropType } from "vue";
 
-export default {
+export const PinCodeProps = {
   id: {
     type: String,
     default: 'pin-code',
@@ -54,24 +54,24 @@ export default {
     default: '🙈',
   },
   // 样式
-  margin: {
-    //输入框之间的外边距，
-    required: false,
-    type: Number as PropType<number>,
-    default: 10,
-  },
-  width: {
-    //输入框的整体宽度，
-    required: false,
-    type: Number as PropType<number>,
-    default: 47,
-  },
-  height: {
-    //输入框之间的整体高度，
-    required: false,
-    type: Number as PropType<number>,
-    default: 47,
-  },
+  // margin: {
+  //   //输入框之间的外边距，
+  //   required: false,
+  //   type: Number as PropType<number>,
+  //   default: 10,
+  // },
+  // width: {
+  //   //输入框的整体宽度，
+  //   required: false,
+  //   type: Number as PropType<number>,
+  //   default: 47,
+  // },
+  // height: {
+  //   //输入框之间的整体高度，
+  //   required: false,
+  //   type: Number as PropType<number>,
+  //   default: 47,
+  // },
   shape: {
     //输入框之间的形状，
     required: false,
@@ -82,3 +82,4 @@ export default {
     default: "Box",
   },
 };
+export type PinCodePropsType = typeof PinCodeProps;

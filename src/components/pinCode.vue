@@ -10,8 +10,9 @@
 </template>
 <script setup lang="ts">
   import { ref, onMounted } from "vue";
-  import Props from "./props";
-  const props = defineProps(Props);
+  import {PinCodeProps} from "./props";
+  // const props = defineProps(Props);
+  const props = defineProps(PinCodeProps);
   const { maxInputs, completeFn, shape, isMask, maskFlag, id, isPaste } = props;
   const InputElementArr = ref<readonly HTMLInputElement[]>([]);
   const pinCode = ref<string[]>(Array(props.maxInputs).fill(""));
