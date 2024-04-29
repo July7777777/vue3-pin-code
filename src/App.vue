@@ -1,4 +1,5 @@
 <template>
+  <example />
   <!-- <pinCode id="1" ref="childRef" shape="Box" :isMask="false" :completeFn="onComplete" /> -->
   <!-- <pinCode id="2" ref="childRef" shape="Circle" :isMask="false" :completeFn="onComplete" />
   <pinCode id="3" ref="childRef" shape="Line" :isMask="false" :completeFn="onComplete" />
@@ -8,6 +9,7 @@
 </template>
 
 <script setup lang="ts">
+  import example from './example/index.vue'
   // import pinCode from '../dist/vue3-pin-code.js'
   // import { ref } from "vue";
   // // let childRef = ref<InstanceType<typeof pinCode> | undefined>(undefined);
@@ -15,3 +17,8 @@
   //   console.log(pin)
   // }
 </script>
+<style>
+  .el-form {
+    background-color: antiquewhite;
+  }
+</style>
