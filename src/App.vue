@@ -17,8 +17,3 @@
   //   console.log(pin)
   // }
 </script>
-<style>
-  .el-form {
-    background-color: antiquewhite;
-  }
-</style>
